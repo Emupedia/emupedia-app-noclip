@@ -2,7 +2,7 @@
 import * as UI from './ui';
 
 import InputManager from './InputManager';
-import { SceneDesc, SceneGroup } from "./SceneBase";
+import { SceneDesc, SceneGroup, Destroyable } from "./SceneBase";
 import { CameraController, Camera } from './Camera';
 import { TextureHolder } from './TextureHolder';
 import { GfxDevice, GfxSwapChain, GfxRenderPass, GfxDebugGroup, GfxTexture } from './gfx/platform/GfxPlatform';
@@ -30,7 +30,11 @@ export interface ViewerRenderInput {
     onscreenTexture: GfxTexture;
 }
 
-export interface SceneGfx {
+export interface SceneGfxBase extends Destroyable {
+    render(device: GfxDevice, renderInput: ViewerRenderInput): GfxRenderPass;
+}
+
+export interface SceneGfx extends SceneGfxBase {
     textureHolder?: TextureHolder<any>;
     createPanels?(): UI.Panel[];
     createCameraController?(): CameraController;
@@ -38,8 +42,6 @@ export interface SceneGfx {
     serializeSaveState?(dst: ArrayBuffer, offs: number): number;
     deserializeSaveState?(src: ArrayBuffer, offs: number, byteLength: number): number;
     onstatechanged?: () => void;
-    render(device: GfxDevice, renderInput: ViewerRenderInput): GfxRenderPass;
-    destroy(device: GfxDevice): void;
 }
 
 export type Listener = (viewer: Viewer) => void;
@@ -95,7 +97,7 @@ export class Viewer {
     public renderStatisticsTracker = new RenderStatisticsTracker();
     public viewport: NormalizedViewportCoords = { x: 0, y: 0, w: 1, h: 1 };
 
-    public scene: SceneGfx | null = null;
+    public scene: SceneGfxBase | null = null;
 
     public oncamerachanged: () => void = (() => {});
     public onstatistics: (statistics: RenderStatistics) => void = (() => {});
@@ -189,7 +191,7 @@ export class Viewer {
         this.cameraController.forceUpdate = true;
     }
 
-    public setScene(scene: SceneGfx | null): void {
+    public setScene(scene: SceneGfxBase | null): void {
         this.scene = scene;
         this.cameraController = null;
     }
