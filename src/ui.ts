@@ -334,7 +334,7 @@ export abstract class ScrollSelect implements Widget {
                 outer.onmouseup = () => {
                     this.isDragging = false;
                 };
-                outer.onmouseover = (e) => {
+                outer.onmouseenter = (e) => {
                     if (this.isDragging)
                         outer.focus();
                 };
@@ -2617,15 +2617,6 @@ export class UI {
     public sceneChanged() {
         const cameraControllerClass = this.viewer.cameraController!.constructor as CameraControllerClass;
         this.viewerSettings.cameraControllerSelected(cameraControllerClass);
-
-        // Textures
-        if (this.viewer.scene !== null) {
-            const scene = this.viewer.scene;
-            if (scene.textureHolder !== undefined)
-                this.textureViewer.setTextureHolder(scene.textureHolder);
-            else
-                this.textureViewer.setTextureList([]);
-        }
     }
 
     private setPanels(panels: Panel[]): void {
