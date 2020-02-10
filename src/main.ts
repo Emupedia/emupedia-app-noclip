@@ -200,7 +200,7 @@ class Main {
     public toplevel: HTMLElement;
     public canvas: HTMLCanvasElement;
     public viewer: Viewer;
-    public groups: (string | SceneGroup)[];
+    public sceneGroups: (string | SceneGroup)[];
     public ui: UI;
     public saveManager = GlobalSaveManager;
     public paused: boolean = false;
@@ -264,13 +264,13 @@ class Main {
 
         this.dataFetcher = new DataFetcher(this.ui.sceneSelect);
 
-        this.groups = sceneGroups;
+        this.sceneGroups = sceneGroups;
 
         this.droppedFileGroup = { id: "drops", name: "Dropped Files", sceneDescs: [] };
-        this.groups.push('Other');
-        this.groups.push(this.droppedFileGroup);
+        this.sceneGroups.push('Other');
+        this.sceneGroups.push(this.droppedFileGroup);
 
-        this.sceneDescLocationCreator = new SceneDescLocationCreator(this.groups, this.saveManager);
+        this.sceneDescLocationCreator = new SceneDescLocationCreator(this.sceneGroups, this.saveManager);
         this.registerLocationLoader(new SceneDescLocationLoader());
 
         this._loadSceneGroups();
@@ -541,7 +541,7 @@ class Main {
     }
 
     private _loadSceneGroups() {
-        this.ui.sceneSelect.setLocations([... this.sceneDescLocationCreator.getPublicLocations()]);
+        this.ui.sceneSelect.setSceneGroups(this.sceneGroups);
     }
 
     private _makeUI() {
